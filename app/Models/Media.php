@@ -14,4 +14,14 @@ class Media extends Model
     {
         return $this->morphTo();
     }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($file) {
+            $file->date = now();
+        });
+    }
 }

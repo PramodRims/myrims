@@ -89,4 +89,10 @@ class User extends Authenticatable implements HasName
      * 
      * 
      */
+
+
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'course_has_students', 'student_id', 'course_id');
+    }
 }

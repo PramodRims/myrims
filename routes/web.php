@@ -2,11 +2,27 @@
 
 use App\Http\Controllers\ImportController;
 use App\Models\Course;
+use App\Models\CourseHasStudent;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
-    $data = Course::with('instructor', 'students')->first();
+    // $data = Course::with('instructor', 'students')->first();
+
+    // dd($data);
+    $courseId = 1;
+
+
+    $data = Course::find($courseId)->studentData();
+
+    // $data = User::whereHas('courses', function ($query) use ($courseId) {
+    //     $query->where('course_id', $courseId);
+    // })
+    // ->whereHas('roles', function ($query) {
+    //     $query->where('first_name', 'student'); // Ensuring the user has the role of 'student'
+    // })
+    // ->pluck('first_name', 'id');
 
     dd($data);
     return view('welcome');

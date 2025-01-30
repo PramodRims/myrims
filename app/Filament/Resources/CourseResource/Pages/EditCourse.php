@@ -27,7 +27,7 @@ class EditCourse extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Action::make('import')->label('Add Bulk Students')
+            Action::make('import')->label('Add Bulk Students with Courses')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('danger')
                 ->form([

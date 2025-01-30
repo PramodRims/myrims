@@ -23,7 +23,10 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
             ]);
     }
 
@@ -31,7 +34,7 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name'),
             ])
             ->filters([
                 //

@@ -79,31 +79,6 @@ class ListStudents extends ListRecords
                         ->send();
                 }),
 
-
-            // Download Sample CSV Button (Dynamically Generated)
-            // Action::make('download_sample')
-            //     ->label('Download Sample')
-            //     ->icon('heroicon-o-document-arrow-down')
-            //     ->color('primary')
-            //     ->action(function () {
-            //         $headers = [
-            //             'Content-Type' => 'text/csv',
-            //             'Content-Disposition' => 'attachment; filename="sample_students.csv"',
-            //         ];
-
-            //         return response()->stream(function () {
-            //             $handle = fopen('php://output', 'w');
-
-            //             // Define the header row
-            //             fputcsv($handle, ['first_name', 'last_name', 'email', 'phone']);
-
-            //             // Add sample data (optional)
-            //             fputcsv($handle, ['John', 'Doe', 'john@example.com', '1234567890']);
-            //             fputcsv($handle, ['Jane', 'Smith', 'jane@example.com', '0987654321']);
-
-            //             fclose($handle);
-            //         }, 200, $headers);
-            //     }),
         ];
     }
 }

@@ -22,6 +22,13 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'course_has_students', 'course_id', 'student_id');
     }
 
+    public function studentData()
+{
+    return CourseHasStudent::where('course_id', $this->id)
+        ->with('student') // Eager load student with specific fields
+        ->get()
+        ->pluck('student');
+}
     public function subjects()
     {
         return $this->hasMany(Subject::class);
