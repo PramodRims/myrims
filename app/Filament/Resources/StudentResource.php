@@ -58,8 +58,6 @@ class StudentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
-                ImportAction::make()
-                    ->importer(StudentsImport::class)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -96,14 +94,4 @@ class StudentResource extends Resource
         ];
     }
 
-    public static function getActions(): array
-    {
-        return [
-            ImportAction::make()
-                ->label('Import')
-                ->icon('heroicon-o-download')
-                ->importer(StudentsImport::class)  // Correctly link to the StudentsImport class
-                ->color('success'),
-        ];
-    }
 }

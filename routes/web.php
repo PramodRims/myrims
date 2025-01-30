@@ -10,7 +10,10 @@ Route::get('/', function () {
 
     dd($data);
     return view('welcome');
-
-    Route::get('/import', [ImportController::class, 'import'])->name('your.import.route');
-
 });
+
+// Route::group(['prefix' => 'admin/courses/', 'as' => 'admin.'], function () {
+//     Route::get('{course}/edit', [ImportController::class, 'edit'])->name('courses.edit');
+// });
+
+Route::get('/admin/courses/{course}/edit', [ImportController::class, 'edit']);

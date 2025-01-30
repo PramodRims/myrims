@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CourseResource\RelationManagers\StudentsRelationManager;
+
 class CourseResource extends Resource
 {
     protected static ?string $model = Course::class;
@@ -64,10 +65,15 @@ class CourseResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('biometric_id')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->formatStateUsing(fn($state) => $state == 1 ? 'Active' : 'Inactive')
+                    ->badge()
+                    ->color(fn($state) => $state == 1 ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('instructor_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Instructor Name')
+                    ->formatStateUsing(fn($state) => \App\Models\User::find($state)?->first_name ?? 'Unknown')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_by')
                     ->numeric()
                     ->sortable(),
