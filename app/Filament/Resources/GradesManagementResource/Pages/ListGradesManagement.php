@@ -103,23 +103,24 @@ class ListGradesManagement extends ListRecords
                         ->maxFiles(5)
                 ])
                 ->action(function ($record, array $data) {
-              
+
                     // Check if files are uploaded and a student is selected
                     if (isset($data['files']) && isset($data['id'])) {
-                        $grid_id = $data['id'];
+                        $grade_id = $data['id'];
                         $files = $data['files'];
-                        $gradesManagement = GradesManagement::find($grid_id);
+                        $gradesManagement = GradesManagement::find($grade_id);
 
                         foreach ($files as $key => $file) {
                             $newfiles[] = ['file_url' => $file];  // Collect all file records
                         }
                         $gradesManagement->files()->createMany($newfiles);
-                        Notification::make()
-                        ->success()
-                        ->title('Success')
-                        ->body('Grade documents uploaded successfully')
-                        ->send();
-
+                        $user = auth()->user();
+                        $user->notify(
+                            Notification::make()
+                                ->title('Success')
+                                ->body('Grade documents uploaded successfully')
+                                ->toDatabase(),
+                        );
                     }
                 })
         ];
