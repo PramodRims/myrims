@@ -14,7 +14,7 @@ Route::get('/', function () {
     $courseId = 1;
 
 
-    $data = Course::find($courseId)->studentData();
+    $data = Course::find($courseId)->students;
 
     // $data = User::whereHas('courses', function ($query) use ($courseId) {
     //     $query->where('course_id', $courseId);

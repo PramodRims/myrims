@@ -27,63 +27,63 @@ class EditCourse extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Action::make('import')->label('Add Bulk Students with Courses')
-                ->icon('heroicon-o-document-arrow-down')
-                ->color('danger')
-                ->form([
-                    FileUpload::make('attachment')
-                        ->label('Upload CSV File')
-                        ->hintColor('danger') // 'danger' applies red color
-                        ->required()
-                        ->hintActions([
-                            FormAction::make('Download Sample')
-                                ->icon('heroicon-o-document-arrow-down')
-                                ->color('success')
-                                ->action(function () {
-                                    $courseId  = $this->record->id;
-                                    // Set headers for CSV response
-                                    $headers = [
-                                        'Content-Type' => 'text/csv',
-                                        'Content-Disposition' => 'attachment; filename="course_students.csv"',
-                                    ];
-                                    $user = auth()->user();
+            // Action::make('import')->label('Add Bulk Students with Courses')
+            //     ->icon('heroicon-o-document-arrow-down')
+            //     ->color('danger')
+            //     ->form([
+            //         FileUpload::make('attachment')
+            //             ->label('Upload CSV File')
+            //             ->hintColor('danger') // 'danger' applies red color
+            //             ->required()
+            //             ->hintActions([
+            //                 FormAction::make('Download Sample')
+            //                     ->icon('heroicon-o-document-arrow-down')
+            //                     ->color('success')
+            //                     ->action(function () {
+            //                         $courseId  = $this->record->id;
+            //                         // Set headers for CSV response
+            //                         $headers = [
+            //                             'Content-Type' => 'text/csv',
+            //                             'Content-Disposition' => 'attachment; filename="course_students.csv"',
+            //                         ];
+            //                         $user = auth()->user();
 
-                                    $user->notify(
-                                        Notification::make()
-                                            ->title('Success')
-                                            ->body('Sample CSV file for student course downloaded successfully')
-                                            ->toDatabase(),
-                                    );
-                                    // Return the response with CSV data
-                                    return response()->stream(function () use ($courseId) {
-                                        $handle = fopen('php://output', 'w');
-                                        fputcsv($handle, ['student_id', 'course_id']);
+            //                         $user->notify(
+            //                             Notification::make()
+            //                                 ->title('Success')
+            //                                 ->body('Sample CSV file for student course downloaded successfully')
+            //                                 ->toDatabase(),
+            //                         );
+            //                         // Return the response with CSV data
+            //                         return response()->stream(function () use ($courseId) {
+            //                             $handle = fopen('php://output', 'w');
+            //                             fputcsv($handle, ['student_id', 'course_id', 'batch_id']);
 
-                                        // Write sample data for 30 students
-                                        foreach (range(1, 2) as $studentId) {
-                                            fputcsv($handle, ['', $courseId]);
-                                        }
+            //                             // Write sample data for 30 students
+            //                             foreach (range(1, 2) as $studentId) {
+            //                                 fputcsv($handle, ['', $courseId, 1]);
+            //                             }
 
-                                        fclose($handle);
-                                    }, 200, $headers);
-                                })
-                        ]),
+            //                             fclose($handle);
+            //                         }, 200, $headers);
+            //                     })
+            //             ]),
 
-                    Placeholder::make('description')->label('')
-                        ->content(new HtmlString('<span style="color: #afafaf;">Only courses_id and student_id  will be imported here *</span>')),
+            //         Placeholder::make('description')->label('')
+            //             ->content(new HtmlString('<span style="color: #afafaf;">Only courses_id and student_id  will be imported here *</span>')),
 
-                ])
-                ->action(function (array $data) {
-                    $file = public_path('storage/' . $data['attachment']);
-                    Excel::import(new CourseImport, $file);
+            //     ])
+            //     ->action(function (array $data) {
+            //         $file = public_path('storage/' . $data['attachment']);
+            //         Excel::import(new CourseImport, $file);
 
-                    //dd($file);
-                    Notification::make()
-                        ->success()
-                        ->title('Success')
-                        ->body('Course imported successfully')
-                        ->send();
-                }),
+            //         //dd($file);
+            //         Notification::make()
+            //             ->success()
+            //             ->title('Success')
+            //             ->body('Course imported successfully')
+            //             ->send();
+            //     }),
         ];
     }
 

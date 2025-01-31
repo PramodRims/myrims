@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('batch_has_students', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('course_id');
-            $table->unsignedBigInteger('subject_id');
+            $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('batch_id');
+            $table->unsignedBigInteger('course_id')->nullable(); //experimental column
+            $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();  // Add this line to enable soft deletes
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('batch_has_students');
     }
 };

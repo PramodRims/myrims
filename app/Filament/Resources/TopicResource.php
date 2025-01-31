@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TopicResource\Pages;
 use App\Filament\Resources\TopicResource\RelationManagers;
+use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Subject;
 use App\Models\Topic;
@@ -27,6 +28,7 @@ class TopicResource extends Resource
     protected static ?string $model = Topic::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = "Course Management";
 
     public static function form(Form $form): Form
     {
@@ -36,62 +38,71 @@ class TopicResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('course_id')
-                    ->label('Course')
-                    ->options(Course::pluck('name', 'id'))
-                    ->live()
-                    ->required(),
+                            ->label('Course')
+                            ->options(Course::pluck('name', 'id'))
+                            ->live()
+                            ->required(),
 
-                Forms\Components\Select::make('subject_id')
-                    ->label('Subject')
-                    ->options(function (callable $get) {
-                        $courseId = $get('course_id');
-                        return $courseId ? Subject::where('course_id', $courseId)->pluck('name', 'id') : [];
-                    })
-                    ->required(),
-
-                Forms\Components\Repeater::make('files')
-                    ->label('Files')
-                    ->relationship('files')
-                    ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->required()
-                            ->columnSpan(1),  // This will place it in the first column
-                        Forms\Components\TextInput::make('author')
-                            ->required()
-                            ->columnSpan(1),  // This will place it in the second column
-                        Forms\Components\Select::make('file_type')
-                            ->options([
-                                'video' => 'Video',
-                                'document' => 'Document',
-                            ])
-                            ->required()
-                            ->reactive()
-                            ->columnSpan(1),  // This will place it in the third column
-                        Forms\Components\DatePicker::make('date')
-                            ->required()
-                            ->columnSpan(1),  // This will place it in the fourth column
-                        Forms\Components\FileUpload::make('file_url')
-                            ->label(function (callable $get) {
-                                $type = $get('file_type') ?? 'document';
-                                return $type === 'video' ? 'Video' : 'Document';
+                        Forms\Components\Select::make('subject_id')
+                            ->label('Subject')
+                            ->options(function (callable $get) {
+                                $courseId = $get('course_id');
+                                return $courseId ? Subject::where('course_id', $courseId)->pluck('name', 'id') : [];
                             })
-                            ->directory('files')
-                            ->maxSize(20000)
-                            ->acceptedFileTypes([
-                                'video/mp4',
-                                'video/mpeg',
-                                'video/avi',
-                                'video/webm',
-                                'application/pdf',
-                                'application/msword'
+                            ->required(),
+                            
+                            Forms\Components\Select::make('batch_id')
+                            ->label('Batch')
+                            ->options(function (callable $get) {
+                                $courseId = $get('course_id');
+                                return $courseId ? Batch::where('course_id', $courseId)->pluck('name', 'id') : [];
+                            })
+                            ->required(),
+
+
+                        Forms\Components\Repeater::make('files')
+                            ->label('Files')
+                            ->relationship('files')
+                            ->schema([
+                                Forms\Components\TextInput::make('title')
+                                    ->required()
+                                    ->columnSpan(1),  // This will place it in the first column
+                                Forms\Components\TextInput::make('author')
+                                    ->required()
+                                    ->columnSpan(1),  // This will place it in the second column
+                                Forms\Components\Select::make('file_type')
+                                    ->options([
+                                        'video' => 'Video',
+                                        'document' => 'Document',
+                                    ])
+                                    ->required()
+                                    ->reactive()
+                                    ->columnSpan(1),  // This will place it in the third column
+                                Forms\Components\DatePicker::make('date')
+                                    ->required()
+                                    ->columnSpan(1),  // This will place it in the fourth column
+                                Forms\Components\FileUpload::make('file_url')
+                                    ->label(function (callable $get) {
+                                        $type = $get('file_type') ?? 'document';
+                                        return $type === 'video' ? 'Video' : 'Document';
+                                    })
+                                    ->directory('files')
+                                    ->maxSize(20000)
+                                    ->acceptedFileTypes([
+                                        'video/mp4',
+                                        'video/mpeg',
+                                        'video/avi',
+                                        'video/webm',
+                                        'application/pdf',
+                                        'application/msword'
+                                    ])
+                                    ->required()
+                                    ->columnSpan('full'),  // This will place the file input in one full-width row
                             ])
-                            ->required()
-                            ->columnSpan('full'),  // This will place the file input in one full-width row
+                            ->columnSpan('full')  // This will make sure the entire repeater is full-width
+                            ->addActionLabel('Add File')
+                            ->columns(4)  // This defines four columns for the text/select inputs 
                     ])
-                    ->columnSpan('full')  // This will make sure the entire repeater is full-width
-                    ->addActionLabel('Add File')
-                    ->columns(4)  // This defines four columns for the text/select inputs 
-                    ])             
             ]);
     }
 

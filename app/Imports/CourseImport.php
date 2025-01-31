@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\BatchHasStudent;
 use App\Models\CourseHasStudent;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -22,9 +23,10 @@ class CourseImport implements ToModel, WithHeadingRow
             return null;  // Skip the row if the student doesn't exist
         }
 
-        return new CourseHasStudent([
-            'course_id' => $row['course_id'],
+        return new BatchHasStudent([
             'student_id' => $row['student_id'],
+            'batch_id' => $row['batch_id'],
+            'course_id' => $row['course_id'],
         ]);
     }
 

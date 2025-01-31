@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseResource\Pages;
 use App\Filament\Resources\CourseResource\RelationManagers;
+use App\Filament\Resources\CourseResource\RelationManagers\BatchesRelationManager;
 use App\Models\Course;
 use App\Models\User;
 use Filament\Forms;
@@ -14,6 +15,16 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CourseResource\RelationManagers\StudentsRelationManager;
+use App\Models\Subject;
+use App\Models\Topic;
+use App\Tables\Columns\TopicColumn;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\HTML;
+use Filament\Forms\Components\ToggleButtons;
 
 class CourseResource extends Resource
 {
@@ -21,29 +32,32 @@ class CourseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = "Course Management";
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image(),
-                Forms\Components\DateTimePicker::make('start_date')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('end_date')
-                    ->required(),
-                Forms\Components\TextInput::make('biometric_id')
-                    ->maxLength(255),
-                Forms\Components\Select::make('instructor_id')
-                    ->options(User::role('instructor')->pluck('first_name', 'id'))
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                Section::make('')
+                    ->schema([
+                        Grid::make(2) // This ensures 2 inputs per row
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\Select::make('head_id')
+                                    ->label('Course Head Instructor')
+                                    ->options(User::role('instructor')->pluck('first_name', 'id'))
+                                    ->searchable()
+                                    ->preload(),
+
+                                Forms\Components\RichEditor::make('description'),
+
+                                Forms\Components\FileUpload::make('image')
+                                    ->image(),
+                            ]),
+                    ])
 
             ]);
     }
@@ -54,32 +68,22 @@ class CourseResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->searchable(),
                 Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\TextColumn::make('start_date')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('biometric_id')
-                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('status')
                     ->formatStateUsing(fn($state) => $state == 1 ? 'Active' : 'Inactive')
                     ->badge()
                     ->color(fn($state) => $state == 1 ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('instructor_id')
-                    ->label('Instructor Name')
-                    ->formatStateUsing(fn($state) => \App\Models\User::find($state)?->first_name ?? 'Unknown')
+                Tables\Columns\TextColumn::make('head')
+                    ->formatStateUsing(function ($state) {
+                        return $state ? $state->first_name . ' ' . $state->last_name : '-';
+                    })
+                    ->label('Course Head')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -98,7 +102,7 @@ class CourseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -110,6 +114,7 @@ class CourseResource extends Resource
     public static function getRelations(): array
     {
         return [
+            BatchesRelationManager::class,
             StudentsRelationManager::class
         ];
     }
@@ -120,6 +125,7 @@ class CourseResource extends Resource
             'index' => Pages\ListCourses::route('/'),
             'create' => Pages\CreateCourse::route('/create'),
             'edit' => Pages\EditCourse::route('/{record}/edit'),
+            'view' => Pages\ViewCourse::route('/{record}/view'),
         ];
     }
 }
